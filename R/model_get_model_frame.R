@@ -89,11 +89,21 @@ model_get_model_frame.model_fit <- function(model) {
 
 #' @export
 #' @rdname model_get_model_frame
-model_get_model_frame.fixest <- function(model) {
-  stats::model.frame.default(
-    model_get_terms(model),
-    data = get(model$call$data, model$call_env)
-  )
+model_get_model_frame.fixest <- function(model, ...) {
+  if(isTRUE(model$call$data.save)) {
+    mf = stats::model.frame.default(
+      model_get_terms(model),
+      data = model$data,
+      ...
+    )
+  } else {
+    mf = stats::model.frame.default(
+      model_get_terms(model),
+      data = eval(model$call$data, model$call_env),
+      ...
+    )
+    return(mf)
+  }
 }
 
 #' @export

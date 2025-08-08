@@ -117,11 +117,20 @@ model_get_model_matrix.model_fit <- function(model, ...) {
 #' and instrumental variables. For more options, see
 #' [fixest::model.matrix.fixest].
 model_get_model_matrix.fixest <- function(model, ...) {
-  stats::model.matrix.default(
-    model_get_terms(model),
-    data = get(model$call$data, model$call_env),
-    ...
-  )
+  if(isTRUE(model$call$data.save)) {
+    mm = stats::model.matrix.default(
+      model_get_terms(model),
+      data = model$data,
+      ...
+    )
+  } else {
+    mm = stats::model.matrix.default(
+      model_get_terms(model),
+      data = eval(model$call$data, model$call_env),
+      ...
+    )
+    return(mm)
+  }
 }
 
 #' @export
